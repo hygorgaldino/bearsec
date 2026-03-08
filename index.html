@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BearSec — CyberSecurity</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;800&display=swap');
+
+  :root {
+    --bg-deep:    #0a0d0f;
+    --bg-panel:   #0f1318;
+    --bg-card:    #141a21;
+    --bg-hover:   #1a2330;
+    --border:     #1e2d3d;
+    --border-lit: #2a4060;
+    --accent:     #00c8a0;
+    --accent2:    #7b5ea7;
+    --accent3:    #e05c5c;
+    --text-pri:   #d4e4f0;
+    --text-sec:   #6a8fa8;
+    --text-dim:   #3a5570;
+    --green:      #00c8a0;
+    --purple:     #9b6fd4;
+    --red:        #e05c5c;
+    --gold:       #c8a832;
+    --terminal:   #00ff88;
+    --font-mono:  'Share Tech Mono', monospace;
+    --font-ui:    'Rajdhani', sans-serif;
+    --font-body:  'Exo 2', sans-serif;
+    --sidebar-w: 260px;
+    --topbar-h:  52px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-pri);
+    font-family: var(--font-body);
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCANLINE overlay ─── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,.07) 2px,
+      rgba(0,0,0,.07) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+
+  .sidebar-logo {
+    padding: 28px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-ring {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 18px rgba(0,200,160,.3), inset 0 0 18px rgba(0,200,160,.06);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-card);
+  }
+
+  .logo-ring::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 40% 40%, rgba(0,200,160,.2), transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%,100% { opacity: .5; }
+    50% { opacity: 1; }
+  }
+
+  .logo-icon {
+    font-size: 32px;
+    z-index: 1;
+    filter: drop-shadow(0 0 8px var(--accent));
+  }
+
+  .logo-title {
+    font-family: var(--font-ui);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text-pri);
+    text-transform: uppercase;
+  }
+
+  .logo-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  /* ─── NAV ─── */
+  nav { flex: 1; padding: 12px 0; }
+
+  .nav-section {
+    padding: 6px 16px 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+    border-left: 3px solid transparent;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-sec);
+    user-select: none;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-pri);
+    border-left-color: var(--border-lit);
+  }
+
+  .nav-item.active {
+    background: linear-gradient(90deg, rgba(0,200,160,.08), transparent);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .nav-item.active .nav-icon { color: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); }
+
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: var(--bg-deep);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .nav-badge.red   { background: var(--red); }
+  .nav-badge.purple{ background: var(--purple); }
+  .nav-badge.gold  { background: var(--gold); }
+
+  /* dropdown */
+  .nav-item.has-drop .drop-arrow {
+    margin-left: auto;
+    font-size: 10px;
+    transition: transform .25s;
+    color: var(--text-dim);
+  }
+  .nav-item.has-drop.open .drop-arrow { transform: rotate(90deg); }
+
+  .nav-dropdown {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .3s ease;
+  }
+  .nav-dropdown.open { max-height: 300px; }
+
+  .nav-sub {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 20px 8px 48px;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-family: var(--font-body);
+    font-size: 12px;
+    transition: color .2s, background .2s;
+    border-left: 3px solid transparent;
+  }
+  .nav-sub:hover { color: var(--text-pri); background: var(--bg-hover); border-left-color: var(--border-lit); }
+  .nav-sub::before { content: '›'; color: var(--accent2); font-size: 14px; }
+
+  /* sidebar footer */
+  .sidebar-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 6px; box-shadow: 0 0 6px var(--green); animation: blink 2s ease infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ─── MAIN ─── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ─── TOPBAR ─── */
+  #topbar {
+    height: var(--topbar-h);
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    position: sticky;
+    top: 0; z-index: 50;
+  }
+
+  #menu-toggle {
+    display: none;
+    background: none; border: none;
+    color: var(--text-sec); font-size: 20px; cursor: pointer;
+    padding: 4px;
+  }
+
+  .topbar-breadcrumb {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-sec);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .topbar-breadcrumb span { color: var(--accent); }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .topbar-search {
+    display: flex; align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0 10px;
+    gap: 8px;
+    transition: border-color .2s;
+  }
+
+  .topbar-search:focus-within { border-color: var(--accent); }
+
+  .topbar-search input {
+    background: none; border: none; outline: none;
+    color: var(--text-pri);
+    font-family: var(--font-mono); font-size: 12px;
+    width: 160px; height: 30px;
+  }
+
+  .topbar-search input::placeholder { color: var(--text-dim); }
+
+  .search-icon { color: var(--text-dim); font-size: 13px; }
+
+  .topbar-btn {
+    width: 32px; height: 32px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-sec);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    transition: all .2s;
+    position: relative;
+  }
+
+  .topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .notif-dot {
+    position: absolute; top: 4px; right: 4px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 6px var(--red);
+  }
+
+  .topbar-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    font-family: var(--font-ui);
+    border: 2px solid var(--border);
+    transition: border-color .2s;
+  }
+
+  .topbar-avatar:hover { border-color: var(--accent); }
+
+  /* ─── CONTENT ─── */
+  #content { padding: 28px 28px 48px; flex: 1; }
+
+  /* ─── PAGE SECTIONS ─── */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header { margin-bottom: 24px; }
+
+  .page-title {
+    font-family: var(--font-ui);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-pri);
+    letter-spacing: 1px;
+  }
+
+  .page-sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-sec);
+    margin-top: 4px;
+  }
+
+  /* ─── STAT CARDS ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 14px;
+    transition: border-color .25s, transform .2s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--card-color, var(--accent));
+    opacity: 0;
+    transition: opacity .25s;
+  }
+
+  .stat-card:hover { border-color: var(--card-color, var(--accent)); transform: translateY(-2px); }
+  .stat-card:hover::before { opacity: 1; }
+
+  .stat-icon {
+    width: 42px; height: 42px; border-radius: 8px;
+    background: rgba(0,200,160,.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .stat-info { flex: 1; }
+
+  .stat-num {
+    font-family: var(--font-ui);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-pri);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-sec);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* ─── TERMINAL ─── */
+  .terminal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+
+  .terminal-bar {
+    background: #0d1117;
+    padding: 8px 14px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .t-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .t-dot.red   { background: #ff5f56; }
+  .t-dot.yellow{ background: #ffbd2e; }
+  .t-dot.green { background: #27c93f; }
+
+  .t-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-sec);
+    margin-left: 4px;
+  }
+
+  .t-controls { margin-left: auto; display: flex; gap: 8px; }
+  .t-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 0 2px; transition: color .2s; }
+  .t-btn:hover { color: var(--text-pri); }
+
+  .terminal-body {
+    background: #0a0f14;
+    padding: 16px 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    min-height: 220px;
+    position: relative;
+  }
+
+  .t-line { color: var(--terminal); line-height: 1.7; }
+  .t-line.dim { color: var(--text-sec); }
+  .t-line.err { color: var(--red); }
+  .t-line.warn { color: var(--gold); }
+
+  .t-prompt { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .t-arrow { color: var(--accent); }
+
+  #term-input {
+    background: none; border: none; outline: none;
+    color: var(--terminal);
+    font-family: var(--font-mono); font-size: 13px;
+    caret-color: var(--terminal);
+    flex: 1;
+    width: calc(100% - 30px);
+  }
+
+  /* ─── GRID LAYOUT ─── */
+  .two-col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+  /* ─── WRITEUP CARDS ─── */
+  .section-title {
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-pri);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .section-title::before {
+    content: '';
+    display: block; width: 3px; height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .writeup-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .writeup-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+
+  .writeup-card:hover { border-color: var(--border-lit); background: var(--bg-hover); transform: translateX(3px); }
+
+  .writeup-icon {
+    width: 36px; height: 36px; border-radius: 6px;
+    background: rgba(123,94,167,.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+    border: 1px solid rgba(123,94,167,.2);
+  }
+
+  .writeup-info { flex: 1; min-width: 0; }
+
+  .writeup-title {
+    font-family: var(--font-ui);
+    font-size: 14px; font-weight: 600;
+    color: var(--text-pri);
+    letter-spacing: .5px;
+  }
+
+  .writeup-meta {
+    font-family: var(--font-mono);
+    font-size: 10px; color: var(--text-sec);
+    margin-top: 3px; display: flex; gap: 10px;
+  }
+
+  .writeup-tags { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+
+  .tag {
+    font-family: var(--font-mono); font-size: 9px;
+    padding: 2px 7px; border-radius: 3px;
+    background: rgba(0,200,160,.08);
+    color: var(--accent);
+    border: 1px solid rgba(0,200,160,.15);
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .tag.red { background: rgba(224,92,92,.08); color: var(--red); border-color: rgba(224,92,92,.15); }
+  .tag.purple { background: rgba(155,111,212,.08); color: var(--purple); border-color: rgba(155,111,212,.15); }
+  .tag.gold { background: rgba(200,168,50,.08); color: var(--gold); border-color: rgba(200,168,50,.15); }
+
+  .writeup-diff {
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 2px 8px; border-radius: 3px;
+    border: 1px solid;
+    flex-shrink: 0; align-self: center;
+  }
+  .diff-easy { color: var(--green); border-color: rgba(0,200,160,.3); }
+  .diff-med   { color: var(--gold); border-color: rgba(200,168,50,.3); }
+  .diff-hard  { color: var(--red); border-color: rgba(224,92,92,.3); }
+
+  /* ─── SIDEBAR WIDGETS ─── */
+  .widget {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .widget-title {
+    font-family: var(--font-ui); font-size: 12px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-sec); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .widget-title-icon { color: var(--accent); }
+
+  .progress-item { margin-bottom: 10px; }
+
+  .prog-header { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-sec); margin-bottom: 4px; }
+  .prog-bar { height: 4px; background: var(--bg-deep); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 2px; transition: width .8s ease; }
+
+  .leaderboard-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-body); font-size: 12px;
+  }
+
+  .leaderboard-item:last-child { border-bottom: none; }
+
+  .rank { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); width: 18px; }
+  .rank.gold-r { color: var(--gold); }
+  .rank.silver { color: #888; }
+  .rank.bronze { color: #a0622a; }
+
+  .lb-name { flex: 1; color: var(--text-pri); }
+  .lb-pts { font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
+
+  /* ─── GENERIC CONTENT PAGES ─── */
+  .placeholder-msg {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 300px;
+    border: 1px dashed var(--border-lit);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: var(--font-mono); font-size: 13px;
+    text-align: center; gap: 12px;
+  }
+
+  .placeholder-msg .big-icon { font-size: 42px; opacity: .4; }
+
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+
+  .tool-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+    cursor: pointer; transition: all .2s;
+    text-align: center;
+  }
+
+  .tool-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .tool-card .t-icon { font-size: 28px; margin-bottom: 8px; }
+  .tool-card .t-name { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--text-pri); }
+  .tool-card .t-desc { font-size: 11px; color: var(--text-sec); margin-top: 4px; }
+
+  .lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+  .lab-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+    cursor: pointer; transition: all .25s;
+  }
+
+  .lab-card:hover { border-color: var(--border-lit); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+
+  .lab-header { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 32px; position: relative; }
+  .lab-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, var(--bg-card)); }
+
+  .lab-body { padding: 14px; }
+  .lab-name { font-family: var(--font-ui); font-size: 15px; font-weight: 600; color: var(--text-pri); }
+  .lab-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text-sec); margin-top: 4px; }
+  .lab-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+  /* ─── NOTIFICATION PANEL ─── */
+  #notif-panel {
+    position: fixed; top: var(--topbar-h); right: 0;
+    width: 300px; background: var(--bg-panel);
+    border-left: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    border-radius: 0 0 0 8px;
+    z-index: 200; padding: 14px;
+    transform: translateX(110%);
+    transition: transform .3s ease;
+    box-shadow: -4px 4px 20px rgba(0,0,0,.5);
+  }
+
+  #notif-panel.open { transform: translateX(0); }
+
+  .notif-header { font-family: var(--font-ui); font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--text-pri); margin-bottom: 10px; text-transform: uppercase; }
+
+  .notif-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-dot2 { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .notif-text { font-size: 12px; color: var(--text-sec); line-height: 1.5; }
+  .notif-text b { color: var(--text-pri); }
+  .notif-time { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+  /* ─── MOBILE ─── */
+  #sidebar-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 99;
+  }
+
+  @media (max-width: 900px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #sidebar-overlay.open { display: block; }
+    #main { margin-left: 0; }
+    #menu-toggle { display: flex; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    .stats-row { grid-template-columns: 1fr; }
+    #content { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar Overlay (mobile) -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ───────────────── SIDEBAR ───────────────── -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-ring"><span class="logo-icon">🐻</span></div>
+    <div class="logo-title">BearSec</div>
+    <div class="logo-sub">// CyberSecurity</div>
+  </div>
+
+  <nav>
+    <div class="nav-section">// Navigation</div>
+
+    <div class="nav-item active" data-page="home">
+      <span class="nav-icon">⌂</span> Home
+    </div>
+
+    <div class="nav-item has-drop" data-page="writeups" onclick="toggleDrop(this)">
+      <span class="nav-icon">📄</span> Writeups
+      <span class="nav-badge purple">23</span>
+      <span class="drop-arrow">›</span>
+    </div>
+    <div class="nav-dropdown">
+      <div class="nav-sub" onclick="navTo('writeups')">All Writeups</div>
+      <div class="nav-sub" onclick="navTo('writeups')">HTB</div>
+      <div class="nav-sub" onclick="navTo('writeups')">TryHackMe</div>
+      <div class="nav-sub" onclick="navTo('writeups')">CTF Archive</div>
+    </div>
+
+    <div class="nav-item has-drop" data-page="exploitation" onclick="toggleDrop(this)">
+      <span class="nav-icon">⚡</span> Exploitation
+      <span class="drop-arrow">›</span>
+    </div>
+    <div class="nav-dropdown">
+      <div class="nav-sub" onclick="navTo('exploitation')">Web Exploits</div>
+      <div class="nav-sub" onclick="navTo('exploitation')">Binary Exploitation</div>
+      <div class="nav-sub" onclick="navTo('exploitation')">Privilege Escalation</div>
+      <div class="nav-sub" onclick="navTo('exploitation')">Reverse Engineering</div>
+    </div>
+
+    <div class="nav-item" data-page="labs" onclick="navTo('labs')">
+      <span class="nav-icon">🧪</span> Labs
+      <span class="nav-badge red">3</span>
+    </div>
+
+    <div class="nav-item" data-page="tshoot" onclick="navTo('tshoot')">
+      <span class="nav-icon">🔧</span> TShoot
+    </div>
+
+    <div class="nav-item" data-page="tools" onclick="navTo('tools')">
+      <span class="nav-icon">⚙</span> Tools
+      <span class="nav-badge">12</span>
+    </div>
+
+    <div class="nav-section">// Info</div>
+
+    <div class="nav-item" data-page="about" onclick="navTo('about')">
+      <span class="nav-icon">◎</span> About
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span class="status-dot"></span>System Online — v2.0.4
+  </div>
+</aside>
+
+<!-- ───────────────── MAIN ───────────────── -->
+<div id="main">
+
+  <!-- Topbar -->
+  <header id="topbar">
+    <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-breadcrumb" id="breadcrumb">
+      BearSec <span>›</span> <span id="bc-page">Dashboard</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span class="search-icon">⌕</span>
+        <input type="text" placeholder="Search...">
+      </div>
+      <button class="topbar-btn" onclick="toggleNotif()" title="Notifications">
+        🔔<span class="notif-dot"></span>
+      </button>
+      <button class="topbar-btn" title="Settings">⚙</button>
+      <div class="topbar-avatar" title="Operator">OP</div>
+    </div>
+  </header>
+
+  <!-- Notification Panel -->
+  <div id="notif-panel">
+    <div class="notif-header">🔔 Notifications</div>
+    <div class="notif-item">
+      <div class="notif-dot2" style="background:var(--red)"></div>
+      <div>
+        <div class="notif-text"><b>New CVE</b> detected — CVE-2024-12345 critical</div>
+        <div class="notif-time">2 min ago</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-dot2" style="background:var(--green)"></div>
+      <div>
+        <div class="notif-text"><b>Lab completed</b> — CybearOS pwned!</div>
+        <div class="notif-time">1h ago</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-dot2" style="background:var(--purple)"></div>
+      <div>
+        <div class="notif-text"><b>New writeup</b> published by r00tkit</div>
+        <div class="notif-time">3h ago</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <main id="content">
+
+    <!-- ── HOME ── -->
+    <section id="page-home" class="page-section active">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Welcome back, Operator. System status: <span style="color:var(--green)">Online.</span></div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card" style="--card-color:var(--gold)">
+          <div class="stat-icon" style="background:rgba(200,168,50,.1)">🏆</div>
+          <div class="stat-info">
+            <div class="stat-num">142</div>
+            <div class="stat-label">Machines Pwned</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--red)">
+          <div class="stat-icon" style="background:rgba(224,92,92,.1)">🐞</div>
+          <div class="stat-info">
+            <div class="stat-num">12</div>
+            <div class="stat-label">CVEs Found</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--accent)">
+          <div class="stat-icon" style="background:rgba(0,200,160,.1)">‹›</div>
+          <div class="stat-info">
+            <div class="stat-num">45</div>
+            <div class="stat-label">PoC Scripts</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--purple)">
+          <div class="stat-icon" style="background:rgba(155,111,212,.1)">◎</div>
+          <div class="stat-info">
+            <div class="stat-num">Top 1%</div>
+            <div class="stat-label">CTF Rank</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Challenge -->
+      <div class="terminal-card" style="margin-bottom:28px">
+        <div class="terminal-bar">
+          <div class="t-dot red"></div>
+          <div class="t-dot yellow"></div>
+          <div class="t-dot green"></div>
+          <span class="t-title">root@bearsec:~</span>
+          <div class="t-controls">
+            <button class="t-btn" title="Minimize">−</button>
+            <button class="t-btn" title="Maximize">□</button>
+            <button class="t-btn" title="Close">×</button>
+          </div>
+        </div>
+        <div class="terminal-body" id="term-body">
+          <div class="t-line">Welcome to BearOS v1.0.2/div>
+          <div class="t-line dim">Type "help" for available commands.</div>
+          <div id="term-output"></div>
+          <div class="t-prompt">
+            <span class="t-arrow">➜</span>
+            <input type="text" id="term-input" placeholder="~ " autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+      </div>
+
+      <!-- Latest Writeups + Widgets -->
+      <div class="two-col">
+        <div>
+          <div class="section-title">Latest Writeups</div>
+          <div class="writeup-list">
+            <div class="writeup-card">
+              <div class="writeup-icon">🐧</div>
+              <div class="writeup-info">
+                <div class="writeup-title">CybearOS — Full Compromise Chain</div>
+                <div class="writeup-meta"><span>HTB</span><span>•</span><span>2h ago</span></div>
+                <div class="writeup-tags"><span class="tag">linux</span><span class="tag purple">privesc</span><span class="tag red">RCE</span></div>
+              </div>
+              <div class="writeup-diff diff-hard">HARD</div>
+            </div>
+            <div class="writeup-card">
+              <div class="writeup-icon">🌐</div>
+              <div class="writeup-info">
+                <div class="writeup-title">SQL Injection — Blind Time-Based</div>
+                <div class="writeup-meta"><span>TryHackMe</span><span>•</span><span>Yesterday</span></div>
+                <div class="writeup-tags"><span class="tag">web</span><span class="tag">sqli</span></div>
+              </div>
+              <div class="writeup-diff diff-med">MED</div>
+            </div>
+            <div class="writeup-card">
+              <div class="writeup-icon">🔐</div>
+              <div class="writeup-info">
+                <div class="writeup-title">JWT Algorithm Confusion Attack</div>
+                <div class="writeup-meta"><span>CTF</span><span>•</span><span>3 days ago</span></div>
+                <div class="writeup-tags"><span class="tag purple">crypto</span><span class="tag">web</span></div>
+              </div>
+              <div class="writeup-diff diff-easy">EASY</div>
+            </div>
+            <div class="writeup-card">
+              <div class="writeup-icon">💾</div>
+              <div class="writeup-info">
+                <div class="writeup-title">Buffer Overflow — x64 ROP Chain</div>
+                <div class="writeup-meta"><span>HTB</span><span>•</span><span>1 week ago</span></div>
+                <div class="writeup-tags"><span class="tag red">binary</span><span class="tag">pwn</span><span class="tag gold">rop</span></div>
+              </div>
+              <div class="writeup-diff diff-hard">INSANE</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <!-- Progress Widget -->
+          <div class="widget">
+            <div class="widget-title"><span class="widget-title-icon">📊</span> Skill Progress</div>
+            <div class="progress-item">
+              <div class="prog-header"><span>Web Exploitation</span><span style="color:var(--accent)">87%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:87%;background:var(--accent)"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="prog-header"><span>Binary / PWN</span><span style="color:var(--red)">64%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:64%;background:var(--red)"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="prog-header"><span>Cryptography</span><span style="color:var(--purple)">72%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:72%;background:var(--purple)"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="prog-header"><span>Network Recon</span><span style="color:var(--gold)">91%</span></div>
+              <div class="prog-bar"><div class="prog-fill" style="width:91%;background:var(--gold)"></div></div>
+            </div>
+          </div>
+          <!-- Leaderboard -->
+          <div class="widget">
+            <div class="widget-title"><span class="widget-title-icon">🏅</span> Leaderboard</div>
+            <div class="leaderboard-item"><span class="rank gold-r">1.</span><span class="lb-name">r00tkit</span><span class="lb-pts">9840 pts</span></div>
+            <div class="leaderboard-item"><span class="rank silver">2.</span><span class="lb-name">0xDEADBEEF</span><span class="lb-pts">8320 pts</span></div>
+            <div class="leaderboard-item"><span class="rank bronze">3.</span><span class="lb-name">nullbyte</span><span class="lb-pts">7150 pts</span></div>
+            <div class="leaderboard-item"><span class="rank">4.</span><span class="lb-name" style="color:var(--accent)">Operator ← you</span><span class="lb-pts">6210 pts</span></div>
+            <div class="leaderboard-item"><span class="rank">5.</span><span class="lb-name">shellsh0ck</span><span class="lb-pts">5980 pts</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WRITEUPS ── -->
+    <section id="page-writeups" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Writeups</div>
+        <div class="page-sub">Documented exploits, CTF solutions & vulnerability analyses.</div>
+      </div>
+      <div class="writeup-list">
+        <div class="writeup-card"><div class="writeup-icon">🐧</div><div class="writeup-info"><div class="writeup-title">CybearOS — Full Compromise Chain</div><div class="writeup-meta"><span>HTB</span><span>•</span><span>2h ago</span></div><div class="writeup-tags"><span class="tag">linux</span><span class="tag purple">privesc</span><span class="tag red">RCE</span></div></div><div class="writeup-diff diff-hard">HARD</div></div>
+        <div class="writeup-card"><div class="writeup-icon">🌐</div><div class="writeup-info"><div class="writeup-title">SQL Injection — Blind Time-Based</div><div class="writeup-meta"><span>TryHackMe</span><span>•</span><span>Yesterday</span></div><div class="writeup-tags"><span class="tag">web</span><span class="tag">sqli</span></div></div><div class="writeup-diff diff-med">MED</div></div>
+        <div class="writeup-card"><div class="writeup-icon">🔐</div><div class="writeup-info"><div class="writeup-title">JWT Algorithm Confusion Attack</div><div class="writeup-meta"><span>CTF</span><span>•</span><span>3 days ago</span></div><div class="writeup-tags"><span class="tag purple">crypto</span><span class="tag">web</span></div></div><div class="writeup-diff diff-easy">EASY</div></div>
+        <div class="writeup-card"><div class="writeup-icon">💾</div><div class="writeup-info"><div class="writeup-title">Buffer Overflow — x64 ROP Chain</div><div class="writeup-meta"><span>HTB</span><span>•</span><span>1 week ago</span></div><div class="writeup-tags"><span class="tag red">binary</span><span class="tag">pwn</span><span class="tag gold">rop</span></div></div><div class="writeup-diff diff-hard">INSANE</div></div>
+        <div class="writeup-card"><div class="writeup-icon">🔍</div><div class="writeup-info"><div class="writeup-title">SSRF to Internal Cloud Metadata</div><div class="writeup-meta"><span>BugBounty</span><span>•</span><span>2 weeks ago</span></div><div class="writeup-tags"><span class="tag">web</span><span class="tag red">ssrf</span><span class="tag">cloud</span></div></div><div class="writeup-diff diff-med">MED</div></div>
+        <div class="writeup-card"><div class="writeup-icon">⚙</div><div class="writeup-info"><div class="writeup-title">Kernel Exploit — CVE-2024-1234</div><div class="writeup-meta"><span>Research</span><span>•</span><span>1 month ago</span></div><div class="writeup-tags"><span class="tag red">kernel</span><span class="tag">lpe</span><span class="tag gold">0day</span></div></div><div class="writeup-diff diff-hard">INSANE</div></div>
+      </div>
+    </section>
+
+    <!-- ── EXPLOITATION ── -->
+    <section id="page-exploitation" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Exploitation</div>
+        <div class="page-sub">Techniques, tools and educational resources on offensive security.</div>
+      </div>
+      <div class="tool-grid">
+        <div class="tool-card"><div class="t-icon">🌐</div><div class="t-name">Web Exploits</div><div class="t-desc">XSS, SQLi, SSRF, RCE</div></div>
+        <div class="tool-card"><div class="t-icon">💾</div><div class="t-name">Binary Exploitation</div><div class="t-desc">BOF, ROP, Heap Spray</div></div>
+        <div class="tool-card"><div class="t-icon">📡</div><div class="t-name">Network Attacks</div><div class="t-desc">MITM, Sniffing, Pivoting</div></div>
+        <div class="tool-card"><div class="t-icon">🔑</div><div class="t-name">Privilege Escalation</div><div class="t-desc">Linux & Windows PrivEsc</div></div>
+        <div class="tool-card"><div class="t-icon">🔄</div><div class="t-name">Reverse Engineering</div><div class="t-desc">Ghidra, IDA, GDB</div></div>
+        <div class="tool-card"><div class="t-icon">🛡</div><div class="t-name">AV / EDR Bypass</div><div class="t-desc">Evasion & Obfuscation</div></div>
+      </div>
+    </section>
+
+    <!-- ── LABS ── -->
+    <section id="page-labs" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Labs</div>
+        <div class="page-sub">Hands-on practice environments and vulnerable machines.</div>
+      </div>
+      <div class="lab-grid">
+        <div class="lab-card"><div class="lab-header" style="background:linear-gradient(135deg,#0d1a12,#0a1a2e)">🐧</div><div class="lab-body"><div class="lab-name">CybearOS v2.0.4</div><div class="lab-meta">Linux • Medium • Active</div><div class="lab-footer"><div class="writeup-tags"><span class="tag">web</span><span class="tag purple">privesc</span></div><span class="writeup-diff diff-med">MED</span></div></div></div>
+        <div class="lab-card"><div class="lab-header" style="background:linear-gradient(135deg,#1a0d0d,#2e0a0a)">🪟</div><div class="lab-body"><div class="lab-name">WinDomain Corp</div><div class="lab-meta">Windows AD • Hard • Active</div><div class="lab-footer"><div class="writeup-tags"><span class="tag red">AD</span><span class="tag">kerberos</span></div><span class="writeup-diff diff-hard">HARD</span></div></div></div>
+        <div class="lab-card"><div class="lab-header" style="background:linear-gradient(135deg,#0d0d1a,#1a0a2e)">☁</div><div class="lab-body"><div class="lab-name">CloudBreach AWS</div><div class="lab-meta">Cloud • Insane • Active</div><div class="lab-footer"><div class="writeup-tags"><span class="tag gold">aws</span><span class="tag red">ssrf</span></div><span class="writeup-diff diff-hard">INSANE</span></div></div></div>
+        <div class="lab-card" style="opacity:.5"><div class="lab-header" style="background:linear-gradient(135deg,#111,#1a1a1a)">🔒</div><div class="lab-body"><div class="lab-name">BinExp Station</div><div class="lab-meta">Binary • Coming Soon</div><div class="lab-footer"><div class="writeup-tags"><span class="tag">pwn</span></div><span class="writeup-diff diff-hard">SOON</span></div></div></div>
+      </div>
+    </section>
+
+    <!-- ── TSHOOT ── -->
+    <section id="page-tshoot" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Troubleshooting</div>
+        <div class="page-sub">Common issues, fixes and debugging notes.</div>
+      </div>
+      <div class="placeholder-msg">
+        <div class="big-icon">🔧</div>
+        <div>Troubleshooting articles will appear here.</div>
+        <div style="color:var(--text-dim);font-size:11px">No entries yet — check back later.</div>
+      </div>
+    </section>
+
+    <!-- ── TOOLS ── -->
+    <section id="page-tools" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Tools</div>
+        <div class="page-sub">Custom scripts and utility collection.</div>
+      </div>
+      <div class="tool-grid">
+        <div class="tool-card"><div class="t-icon">🔍</div><div class="t-name">Port Scanner</div><div class="t-desc">Fast TCP/UDP scanner</div></div>
+        <div class="tool-card"><div class="t-icon">🕸</div><div class="t-name">Web Fuzzer</div><div class="t-desc">Directory & parameter</div></div>
+        <div class="tool-card"><div class="t-icon">💉</div><div class="t-name">SQLmap Wrapper</div><div class="t-desc">Automated injection</div></div>
+        <div class="tool-card"><div class="t-icon">🔐</div><div class="t-name">Hash Cracker</div><div class="t-desc">MD5, SHA1, bcrypt</div></div>
+        <div class="tool-card"><div class="t-icon">📡</div><div class="t-name">Packet Sniffer</div><div class="t-desc">Live traffic capture</div></div>
+        <div class="tool-card"><div class="t-icon">🗝</div><div class="t-name">SSH Brute</div><div class="t-desc">Credential testing</div></div>
+        <div class="tool-card"><div class="t-icon">⚡</div><div class="t-name">Exploit DB CLI</div><div class="t-desc">Search & fetch PoCs</div></div>
+        <div class="tool-card"><div class="t-icon">🛰</div><div class="t-name">C2 Framework</div><div class="t-desc">Lightweight C2 setup</div></div>
+      </div>
+    </section>
+
+    <!-- ── ABOUT ── -->
+    <section id="page-about" class="page-section">
+      <div class="page-header">
+        <div class="page-title">About</div>
+        <div class="page-sub">The bear behind the terminal.</div>
+      </div>
+      <div class="two-col">
+        <div class="widget" style="padding:24px">
+          <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px">
+            <div class="logo-ring" style="width:60px;height:60px"><span style="font-size:24px;z-index:1">🐻</span></div>
+            <div>
+              <div style="font-family:var(--font-ui);font-size:20px;font-weight:700">BearSec</div>
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent)">//&nbsp;Offensive Security Researcher</div>
+            </div>
+          </div>
+          <p style="font-size:13px;color:var(--text-sec);line-height:1.8">Security researcher focused on web application security, binary exploitation, and CTF competitions. Top 1% on HTB, multiple CVEs credited, and a growing collection of PoC scripts.</p>
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+            <span class="tag">Web Security</span>
+            <span class="tag purple">Binary Exploitation</span>
+            <span class="tag gold">CTF Player</span>
+            <span class="tag red">CVE Research</span>
+          </div>
+        </div>
+        <div>
+          <div class="widget">
+            <div class="widget-title"><span class="widget-title-icon">📬</span> Contact</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-sec);line-height:2">
+              <div>🐦 @bearsec_</div>
+              <div>💬 Discord: bearsec#0001</div>
+              <div>🔑 PGP Key available</div>
+            </div>
+          </div>
+          <div class="widget">
+            <div class="widget-title"><span class="widget-title-icon">🏅</span> Certifications</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-sec);line-height:2.2">
+              <div style="color:var(--accent)">✓ OSCP — Offensive Security</div>
+              <div style="color:var(--green)">✓ eWPT — eLearnSecurity</div>
+              <div style="color:var(--purple)">✓ CEH — EC-Council</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ── Navigation ──
+  const pages = { home:'Dashboard', writeups:'Writeups', exploitation:'Exploitation', labs:'Labs', tshoot:'Troubleshooting', tools:'Tools', about:'About' };
+
+  function navTo(id) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    document.querySelectorAll('.nav-item[data-page="' + id + '"]').forEach(n => n.classList.add('active'));
+    document.getElementById('bc-page').textContent = pages[id] || id;
+    if (window.innerWidth <= 900) closeSidebar();
+  }
+
+  // Home nav item click (no dropdown)
+  document.querySelector('.nav-item[data-page="home"]').addEventListener('click', () => navTo('home'));
+
+  // ── Dropdowns ──
+  function toggleDrop(el) {
+    const isOpen = el.classList.contains('open');
+    const drop = el.nextElementSibling;
+    el.classList.toggle('open', !isOpen);
+    drop.classList.toggle('open', !isOpen);
+    navTo(el.dataset.page);
+  }
+
+  // ── Sidebar (mobile) ──
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  }
+
+  // ── Notifications ──
+  let notifOpen = false;
+  function toggleNotif() {
+    notifOpen = !notifOpen;
+    document.getElementById('notif-panel').classList.toggle('open', notifOpen);
+  }
+
+  document.addEventListener('click', e => {
+    if (notifOpen && !e.target.closest('#notif-panel') && !e.target.closest('.topbar-btn')) {
+      notifOpen = false;
+      document.getElementById('notif-panel').classList.remove('open');
+    }
+  });
+
+  // ── Terminal ──
+  const termInput = document.getElementById('term-input');
+  const termOut   = document.getElementById('term-output');
+
+  const cmds = {
+    help:   () => ['Available commands:', '  ls         — list directory', '  whoami     — current user', '  uname -a   — system info', '  ps aux     — processes', '  id         — user id', '  cat flag   — read the flag', '  clear      — clear terminal'],
+    ls:     () => ['Documents/  Tools/  flags/  .ssh/  exploit.py'],
+    whoami: () => ['root'],
+    id:     () => ['uid=0(root) gid=0(root) groups=0(root)'],
+    'uname -a': () => ['Linux cybearsec-box 5.15.0-88-generic #98-Ubuntu SMP x86_64 GNU/Linux'],
+    'ps aux':   () => ['root   1  0.0  nginx', 'root  42  0.2  python3 app.py', 'root  99  0.0  sshd'],
+    'cat flag': () => ['🚩 HTB{b34r_pwn3d_th3_b0x_4g41n}'],
+    clear:  () => { termOut.innerHTML = ''; return []; },
+  };
+
+  termInput.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const cmd = termInput.value.trim();
+    termInput.value = '';
+    if (!cmd) return;
+
+    const echo = document.createElement('div');
+    echo.className = 't-line dim';
+    echo.textContent = '➜ ~ ' + cmd;
+    termOut.appendChild(echo);
+
+    const handler = cmds[cmd];
+    const lines = handler ? handler() : [`bash: ${cmd}: command not found`];
+
+    lines.forEach(l => {
+      const d = document.createElement('div');
+      d.className = 't-line' + (l.includes('not found') ? ' err' : '');
+      d.textContent = l;
+      termOut.appendChild(d);
+    });
+
+    termInput.closest('.terminal-body').scrollTop = 99999;
+  });
+
+  termInput.focus();
+  document.querySelector('.terminal-body').addEventListener('click', () => termInput.focus());
+</script>
+</body>
+</html>
