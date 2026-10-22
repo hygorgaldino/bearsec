@@ -1,0 +1,40 @@
+/* Variables and font import */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;800&display=swap');
+
+:root {
+  /* Cores principais */
+  --bg-deep:        #0a0d0f;
+  --bg-panel:       #0f1318;
+  --bg-card:        #141a21;
+  --bg-hover:       #1a2330;
+  --border:         #1e2d3d;
+  --border-lit:     #2a4060;
+  --accent:         #00c8a0;
+  --accent2:        #7b5ea7;
+  --accent3:        #e05c5c;
+  --text-pri:       #d4e4f0;
+  --text-sec:       #6a8fa8;
+  --text-dim:       #3a5570;
+  --green:          #00c8a0;
+  --purple:         #9b6fd4;
+  --red:            #e05c5c;
+  --gold:           #c8a832;
+  --terminal:       #00ff88;
+
+  /* Tipografia */
+  --font-mono:      'Share Tech Mono', monospace;
+  --font-ui:        'Rajdhani', sans-serif;
+  --font-body:      'Exo 2', sans-serif;
+
+  /* Dimensões do layout */
+  --largura-sidebar: 260px;
+  --altura-header:   56px;
+
+  /* Aliases para compatibilidade */
+  --sidebar-w:      var(--largura-sidebar);
+  --topbar-h:       var(--altura-header);
+  --cor-header:     var(--bg-panel);
+  --cor-sidebar:    var(--bg-panel);
+  --cor-conteudo:   var(--bg-deep);
+  --cor-borda:      var(--border);
+}

@@ -1,0 +1,165 @@
+/* ─────────────────────────────────────────
+   TERMINAL (compacto com scroll)
+───────────────────────────────────────── */
+
+.terminal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 28px;
+
+    /* Novo layout flex-column + altura máxima fixa */
+    display: flex;
+    flex-direction: column;
+    height: 250px;
+    /* controla o espaço ocupado */
+}
+
+.terminal-bar {
+    background: #0d1117;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.t-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+.t-dot.red {
+    background: #ff5f56;
+}
+
+.t-dot.yellow {
+    background: #ffbd2e;
+}
+
+.t-dot.green {
+    background: #27c93f;
+}
+
+.t-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-sec);
+    margin-left: 4px;
+}
+
+.t-controls {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+}
+
+.t-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 2px;
+    transition: color .2s;
+}
+
+.t-btn:hover {
+    color: var(--text-pri);
+}
+
+.terminal-body {
+    background: #0a0f14;
+    padding: 12px 14px 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+
+    /* Scroll interno */
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+
+    /* Estilo webkit */
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+}
+
+/* Linhas de saída */
+.t-line {
+    color: var(--terminal);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.t-line.dim {
+    color: var(--text-sec);
+}
+
+.t-line.err {
+    color: var(--red);
+}
+
+.t-line.warn {
+    color: var(--gold);
+}
+
+.t-prompt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    /* empurra para a parte inferior */
+    flex-shrink: 0;
+    /* nunca encolhe */
+}
+
+.t-arrow {
+    color: var(--accent);
+}
+
+#term-input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--terminal);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    caret-color: var(--terminal);
+    flex: 1;
+}
+
+/* Modo claro */
+body.light .terminal-body {
+    background: #f0f4f8;
+}
+
+body.light #term-input {
+    color: var(--terminal);
+}
+
+body.light .t-line {
+    color: #007a50;
+}
+
+body.light .t-line.dim {
+    color: var(--text-sec);
+}
+
+body.light .t-line.err {
+    color: var(--red);
+}
