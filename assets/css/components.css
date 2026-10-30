@@ -1,22 +1,8 @@
 /* ==========================================================================
-   COMPONENTS (HEADER, SIDEBAR, FOOTER, TOGGLE, MENU, TERMINAL, etc.)
+   COMPONENTS (HEADER, SIDEBAR, FOOTER DECORATIONS, TOGGLES, MENU)
    ========================================================================== */
 
 /* Header components */
-#site-header {
-  grid-area: header;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: var(--altura-header);
-}
-
 #site-header .logo {
   font-family: var(--font-ui);
   font-size: 1.25rem;
@@ -107,25 +93,119 @@
   pointer-events: none;
 }
 
+/* Estilo do toggle no Modo Claro (conforme imagem de referência) */
 body.light #theme-toggle {
   background: #ffffff;
-  border: 1px solid var(--accent);
+  border: 1.5px solid #1a2535;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+body.light #theme-toggle:hover {
+  border-color: var(--accent);
 }
 
 body.light #theme-toggle .toggle-knob {
   transform: translateX(24px);
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(0, 200, 160, 0.35);
+}
+
+/* Menu Toggle (Mobile) */
+#menu-toggle {
+  display: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-sec);
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+#menu-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-hover);
 }
 
 /* Sidebar components */
-#site-sidebar {
-  grid-area: sidebar;
-  background: var(--bg-panel);
-  border-right: 1px solid var(--border);
-  padding: 16px 0;
-  overflow-y: auto;
+
+/* --- Sidebar Logo --- */
+@keyframes ringPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 200, 160, 0.4), 0 0 18px rgba(0, 200, 160, 0.25);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(0, 200, 160, 0), 0 0 28px rgba(0, 200, 160, 0.45);
+  }
+}
+
+.sidebar-logo {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
 }
+
+.logo-ring {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 40% 35%, rgba(0, 200, 160, 0.12), transparent 70%);
+  animation: ringPulse 3s ease-in-out infinite;
+  position: relative;
+  margin-bottom: 12px;
+  overflow: hidden;
+  /* Garante que a imagem respeite o formato circular */
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  /* Foca na face cibernética do urso */
+  display: block;
+}
+
+
+.logo-icon {
+  font-size: 36px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(0, 200, 160, 0.5));
+}
+
+.logo-title {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-pri);
+  margin-bottom: 4px;
+}
+
+.logo-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+/* --- /Sidebar Logo --- */
 
 #site-sidebar ul {
   list-style: none;
@@ -178,7 +258,9 @@ body.light #theme-toggle .toggle-knob {
   font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+  border: none;
   border-left: 3px solid transparent;
+  box-shadow: none;
   transition: all 0.2s ease;
   position: relative;
   user-select: none;
@@ -231,6 +313,7 @@ body.light #theme-toggle .toggle-knob {
   color: var(--accent);
 }
 
+/* Submenu Retrátil */
 .nav-submenu {
   list-style: none;
   padding: 0;
@@ -294,21 +377,7 @@ body.light #theme-toggle .toggle-knob {
   animation: blink 2s ease infinite;
 }
 
-/* Footer component */
-#site-footer {
-  grid-area: footer;
-  background: var(--bg-panel);
-  border-top: 1px solid var(--border);
-  padding: 12px 28px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+/* Footer decorations */
 #site-footer::before {
   content: '';
   display: inline-block;
@@ -318,116 +387,4 @@ body.light #theme-toggle .toggle-knob {
   background: var(--green);
   box-shadow: 0 0 6px var(--green);
   animation: blink 2s ease infinite;
-}
-
-/* Terminal component */
-.terminal-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 28px;
-}
-
-.terminal-bar {
-  background: #0d1117;
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.t-dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-}
-
-.t-dot.red {
-  background: #ff5f56;
-}
-
-.t-dot.yellow {
-  background: #ffbd2e;
-}
-
-.t-dot.green {
-  background: #27c93f;
-}
-
-.t-title {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-sec);
-  margin-left: 4px;
-}
-
-.t-controls {
-  margin-left: auto;
-  display: flex;
-  gap: 8px;
-}
-
-.t-btn {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  font-size: 14px;
-  padding: 0 2px;
-  transition: color 0.2s;
-}
-
-.t-btn:hover {
-  color: var(--text-pri);
-}
-
-.terminal-body {
-  background: #0a0f14;
-  padding: 16px 18px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  min-height: 180px;
-  position: relative;
-}
-
-.t-line {
-  color: var(--terminal);
-  line-height: 1.7;
-}
-
-.t-line.dim {
-  color: var(--text-sec);
-}
-
-.t-line.err {
-  color: var(--red);
-}
-
-.t-line.warn {
-  color: var(--gold);
-}
-
-.t-prompt {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.t-arrow {
-  color: var(--accent);
-}
-
-#term-input {
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--terminal);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  caret-color: var(--terminal);
-  flex: 1;
-  width: calc(100% - 30px);
 }
