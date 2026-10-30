@@ -1,71 +1,40 @@
 /* ============================================================
-   Navegação centralizada: para adicionar/remover itens do menu,
-   basta editar o array NAV abaixo. Todas as páginas são
-   montadas automaticamente pelo buildSidebar().
+   main.js - Lógica e Orquestração do Layout
+   O menu de navegação reside separadamente em: assets/js/nav.js
    ============================================================ */
 
-const NAV = [
-  {
-    titulo: null, itens: [
-      { texto: "HOME", href: "index.html", id: "home", icone: "⌂" },
-    ]
-  },
-  {
-    titulo: "WRITEUPS", icone: "📄", itens: [
-      { texto: "All Writeups", href: "writeups/allwriteups.html", id: "writeups-all" },
-      { texto: "HTB", href: "writeups/htb.html", id: "writeups-htb" },
-      { texto: "TryHackMe", href: "writeups/tryhackme.html", id: "writeups-thm" },
-      { texto: "HC", href: "writeups/hc.html", id: "writeups-hc" },
-      { texto: "CTF Archive", href: "writeups/ctf-archive.html", id: "writeups-ctf" },
-    ]
-  },
-  {
-    titulo: "EXPLOITATION", icone: "⚡", itens: [
-      { texto: "Web Exploits", href: "exploitation/web-exploits.html", id: "exploitation-web" },
-      { texto: "Binary Exploitation", href: "exploitation/binary-exploitation.html", id: "exploitation-binary" },
-      { texto: "Privilege Escalation", href: "exploitation/privilege-escalation.html", id: "exploitation-privesc" },
-      { texto: "Reverse Engineering", href: "exploitation/reverse-engineering.html", id: "exploitation-re" },
-    ]
-  },
-  {
-    titulo: null, itens: [
-      { texto: "LABS", href: "labs.html", id: "labs", icone: "🧪" },
-      { texto: "TSHOOT", href: "tshoot.html", id: "tshoot", icone: "🔧" },
-      { texto: "TOOLS", href: "tools.html", id: "tools", icone: "⚙" },
-      { texto: "ABOUT", href: "about.html", id: "about", icone: "◎" },
-    ]
-  },
-];
+(function () {
+  "use strict";
 
-/* ============================================================
-   Tema Claro / Escuro (Dark / Light Theme Toggle)
-   ============================================================ */
-function initTheme() {
-  const saved = localStorage.getItem("blog-theme");
-  if (saved === "light") {
-    document.body.classList.add("light");
-  } else {
-    document.body.classList.remove("light");
+  /* ------------------------------------------------------------
+     1. Gerenciador de Tema (Dark / Light)
+     ------------------------------------------------------------ */
+  function initTheme() {
+    const saved = localStorage.getItem("blog-theme");
+    if (saved === "light") {
+      document.body.classList.add("light");
+    } else {
+      document.body.classList.remove("light");
+    }
   }
-}
 
-function toggleTheme() {
-  const isLight = document.body.classList.toggle("light");
-  localStorage.setItem("blog-theme", isLight ? "light" : "dark");
-}
+  function toggleTheme() {
+    const isLight = document.body.classList.toggle("light");
+    localStorage.setItem("blog-theme", isLight ? "light" : "dark");
+  }
 
-// Inicializa o tema imediatamente para evitar flash
-initTheme();
+  // Inicializa o tema imediatamente para evitar flash de tela (FOUC)
+  initTheme();
 
-/* Injeta header + sidebar + footer em qualquer página que
-   tenha as divs #site-header, #site-sidebar e #site-footer. */
-function buildLayout() {
-  const prefixo = document.body.dataset.prefixo || ""; // "../" para páginas em subpastas
+  /* ------------------------------------------------------------
+     2. Componentes de Interface
+     ------------------------------------------------------------ */
+  function buildHeader(prefixo) {
+    const header = document.getElementById("site-header");
+    if (!header) return;
 
-  const header = document.getElementById("site-header");
-  if (header) {
     header.innerHTML = `
-      <a class="logo" href="${prefixo}index.html">Meu Blog</a>
+      <a class="logo" href="${prefixo}index.html">BearSec</a>
       <div class="header-actions">
         <button id="theme-toggle" type="button" aria-label="Alternar modo claro e escuro" title="Alternar tema">
           <span class="toggle-track">
@@ -74,79 +43,141 @@ function buildLayout() {
           </span>
           <span class="toggle-knob"></span>
         </button>
-        <button id="menu-toggle" aria-label="Abrir menu">&#9776;</button>
+        <button id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">&#9776;</button>
       </div>`;
 
-    header.querySelector("#theme-toggle").addEventListener("click", toggleTheme);
+    const themeBtn = header.querySelector("#theme-toggle");
+    const menuBtn = header.querySelector("#menu-toggle");
 
-    header.querySelector("#menu-toggle").addEventListener("click", () =>
-      document.getElementById("site-sidebar").classList.toggle("aberto"));
+    themeBtn?.addEventListener("click", toggleTheme);
+
+    menuBtn?.addEventListener("click", () => {
+      const sidebar = document.getElementById("site-sidebar");
+      const aberto = sidebar?.classList.toggle("aberto");
+      menuBtn.setAttribute("aria-expanded", String(Boolean(aberto)));
+    });
   }
 
-  const sidebar = document.getElementById("site-sidebar");
-  if (sidebar) {
+  // Renderiza um link de navegação de forma padronizada e unificada (DRY)
+  function renderNavLink(item, prefixo, paginaAtual) {
+    const isAtivo = item.id === paginaAtual;
+    const iconHtml = item.icone ? `<span class="nav-icon">${item.icone}</span>` : "";
+    return `<li><a class="nav-link${isAtivo ? " ativo" : ""}" data-id="${item.id}" href="${prefixo}${item.href}">${iconHtml}<span class="nav-texto">${item.texto}</span></a></li>`;
+  }
+
+  function buildSidebar(prefixo, navItems) {
+    const sidebar = document.getElementById("site-sidebar");
+    if (!sidebar || !Array.isArray(navItems)) return;
+
+    const paginaAtual = document.body.dataset.page || "";
+
     let html = `
       <div class="sidebar-logo">
-        <div class="logo-ring">
-          <span class="logo-icon">🐻</span>
-        </div>
+      <a href="${prefixo}index.html" class="logo-ring" title="BearSec Home">
+          <img src="${prefixo}assets/img/bearsec-logo.jpg" alt="BearSec Logo" class="logo-img">
+        </a>
         <div class="logo-title">BearSec</div>
         <div class="logo-sub">// CyberSecurity</div>
       </div>
-    `;
-    html += "<ul>";
-    for (const secao of NAV) {
+      <ul>`;
+
+    for (const secao of navItems) {
       if (secao.titulo) {
+        // Verifica se algum item filho corresponde à página atual para já renderizar aberto
+        const hasItemAtivo = secao.itens.some(item => item.id === paginaAtual);
+        const iconHtml = secao.icone ? `<span class="nav-icon">${secao.icone}</span>` : "";
+
         html += `
-          <li class="nav-secao nav-dropdown">
-            <button class="nav-titulo-btn" type="button" aria-expanded="false">
-              ${secao.icone ? `<span class="nav-icon">${secao.icone}</span>` : ""}
+          <li class="nav-secao nav-dropdown${hasItemAtivo ? " aberto" : ""}">
+            <button class="nav-titulo-btn" type="button" aria-expanded="${hasItemAtivo ? "true" : "false"}">
+              ${iconHtml}
               <span class="nav-titulo-texto">${secao.titulo}</span>
               <span class="submenu-arrow">▶</span>
             </button>
-            <ul class="nav-submenu">`;
-        for (const item of secao.itens) {
-          html += `<li><a class="nav-link" data-id="${item.id}" href="${prefixo}${item.href}">${item.texto}</a></li>`;
-        }
-        html += `</ul></li>`;
+            <ul class="nav-submenu">
+              ${secao.itens.map(item => renderNavLink(item, prefixo, paginaAtual)).join("")}
+            </ul>
+          </li>`;
       } else {
-        html += `<li class="nav-secao"><ul>`;
-        for (const item of secao.itens) {
-          html += `<li><a class="nav-link" data-id="${item.id}" href="${prefixo}${item.href}">${item.icone ? `<span class="nav-icon">${item.icone}</span>` : ""}<span class="nav-texto">${item.texto}</span></a></li>`;
-        }
-        html += `</ul></li>`;
+        html += `
+          <li class="nav-secao">
+            <ul>
+              ${secao.itens.map(item => renderNavLink(item, prefixo, paginaAtual)).join("")}
+            </ul>
+          </li>`;
       }
     }
-    html += `</ul><div class="nav-info">// Info</div>`;
+
+    html += `</ul><div class="nav-info">// System Online - v1.0.0</div>`;
     sidebar.innerHTML = html;
 
-    // Adiciona evento de clique para expandir/recolher submenus
-    sidebar.querySelectorAll(".nav-titulo-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
+    // Delegação centralizada de eventos na barra lateral (melhor performance e sem múltiplos loops)
+    sidebar.addEventListener("click", (e) => {
+      // Toggle de dropdown retrátil
+      const btn = e.target.closest(".nav-titulo-btn");
+      if (btn) {
         const dropdown = btn.closest(".nav-dropdown");
-        const aberto = dropdown.classList.toggle("aberto");
-        btn.setAttribute("aria-expanded", aberto ? "true" : "false");
-      });
-    });
-
-    // destaca o item ativo conforme data-page do <body> e abre o submenu pai se aplicável
-    const atual = document.body.dataset.page;
-    sidebar.querySelectorAll(".nav-link").forEach(a => {
-      const isAtivo = a.dataset.id === atual;
-      a.classList.toggle("ativo", isAtivo);
-      if (isAtivo) {
-        const parentDropdown = a.closest(".nav-dropdown");
-        if (parentDropdown) {
-          parentDropdown.classList.add("aberto");
-          const btn = parentDropdown.querySelector(".nav-titulo-btn");
-          if (btn) btn.setAttribute("aria-expanded", "true");
+        if (dropdown) {
+          const aberto = dropdown.classList.toggle("aberto");
+          btn.setAttribute("aria-expanded", String(aberto));
         }
+        return;
+      }
+
+      // Ao clicar em um link no mobile, fecha a sidebar automaticamente
+      const link = e.target.closest(".nav-link");
+      if (link && window.innerWidth <= 768) {
+        sidebar.classList.remove("aberto");
+        const menuBtn = document.getElementById("menu-toggle");
+        menuBtn?.setAttribute("aria-expanded", "false");
       }
     });
   }
 
-  const footer = document.getElementById("site-footer");
-  if (footer) footer.innerHTML = "// Info — blog de segurança";
-}
+  function buildFooter() {
+    const footer = document.getElementById("site-footer");
+    if (footer) footer.innerHTML = "// EOF";
+  }
 
-document.addEventListener("DOMContentLoaded", buildLayout);
+  /* ------------------------------------------------------------
+     3. Orquestrador e Inicialização
+     ------------------------------------------------------------ */
+  function buildLayout() {
+    const prefixo = document.body.dataset.prefixo || "";
+
+    buildHeader(prefixo);
+    buildFooter();
+
+    if (window.NAV) {
+      buildSidebar(prefixo, window.NAV);
+    } else {
+      // Carrega nav.js dinamicamente caso não tenha sido importado via HTML
+      const script = document.createElement("script");
+      script.src = `${prefixo}assets/js/nav.js`;
+      script.onload = () => buildSidebar(prefixo, window.NAV);
+      script.onerror = () => console.error("Não foi possível carregar: " + script.src);
+      document.head.appendChild(script);
+    }
+
+    // Fecha a sidebar ao clicar fora (backdrop no mobile)
+    document.addEventListener("click", (e) => {
+      const sidebar = document.getElementById("site-sidebar");
+      const menuBtn = document.getElementById("menu-toggle");
+      if (
+        sidebar?.classList.contains("aberto") &&
+        !sidebar.contains(e.target) &&
+        !menuBtn?.contains(e.target)
+      ) {
+        sidebar.classList.remove("aberto");
+        menuBtn?.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", buildLayout);
+
+  // Expõe no escopo global para compatibilidade com testes e diretrizes do AGENTS.md
+  window.buildLayout = buildLayout;
+  window.initTheme = initTheme;
+  window.toggleTheme = toggleTheme;
+})();
